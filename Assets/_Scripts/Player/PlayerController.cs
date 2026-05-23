@@ -52,6 +52,8 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W)) Saltar();
         if (Input.GetKeyDown(KeyCode.S)) IniciarSlide();
         if (Input.GetKeyDown(KeyCode.Space)) Saltar();
+        if (Input.GetKeyDown(KeyCode.T)) TimeManager.Instance.ActivarPoder();
+        if (Input.GetKeyUp(KeyCode.T)) TimeManager.Instance.DesactivarPoder();
 #endif
         ProcesarSwipe();
     }
@@ -96,14 +98,15 @@ public class PlayerController : MonoBehaviour
         if (nuevoCarril == carrilActual) return;
 
         carrilActual = nuevoCarril;
-        xObjetivo = LaneSystem.Instance.GetPosicionCarril(carrilActual).x;
+        xObjetivo = carrilActual * 2.5f;
     }
 
     void AplicarMovimientoLateral()
     {
-        Vector3 pos = transform.position;
-        pos.x = Mathf.MoveTowards(pos.x, xObjetivo, velocidadLateral * Time.deltaTime);
-        transform.position = pos;
+        float xActual = transform.position.x;
+        float xNuevo = Mathf.MoveTowards(xActual, xObjetivo, velocidadLateral * Time.deltaTime);
+        float diferencia = xNuevo - xActual;
+        cc.Move(new Vector3(diferencia, 0f, 0f));
     }
 
     void AplicarGravedad()

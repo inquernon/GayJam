@@ -9,7 +9,7 @@ public class ScrollManager : MonoBehaviour
     public float velocidadActual { get; private set; }
 
     private float distanciaRecorrida = 0f;
-    private bool corriendo = false;
+    [SerializeField] private bool corriendo = true;
 
     void Awake()
     {
