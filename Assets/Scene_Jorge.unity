@@ -1416,6 +1416,7 @@ MonoBehaviour:
   obstaculosPrefabs:
   - {fileID: 4340574091851820814, guid: 7ca571320e0f71744946301d0eac737b, type: 3}
   - {fileID: 5758349258867031610, guid: c351d942e62afc747890d836aec998a8, type: 3}
+  - {fileID: 772615411271600594, guid: 5305c59f7b7e72b41ba423209313c909, type: 3}
   intervaloSpawn: 2.5
   distanciaSpawn: 30
   separacionCarriles: 4
