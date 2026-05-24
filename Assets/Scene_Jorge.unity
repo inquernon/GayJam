@@ -1531,7 +1531,7 @@ TerrainCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_TerrainData: {fileID: 15600000, guid: 4ff8eea2d979ebd41874ff3fd0d831ff, type: 2}
   m_EnableTreeColliders: 0
@@ -1699,7 +1699,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 1
+  m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -462981019419857548, guid: 78b41a1a9a196d94a8e01aae9744ccb1, type: 3}
 --- !u!114 &1271316854
