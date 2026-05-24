@@ -16,12 +16,9 @@ public abstract class ObstaculoBase : MonoBehaviour
 
     protected virtual void Update()
     {
-        // Se mueve con el mundo igual que los planos
+        if (GameManager.Instance.EstadoActual != GameManager.Estado.Jugando) return;
         transform.position += ScrollManager.Instance.GetDesplazamiento();
-
-        // Se autodestruye cuando sale de cámara
-        if (transform.position.z < -10f)
-            Destroy(gameObject);
+        if (transform.position.z < -10f) Destroy(gameObject);
     }
 
     protected virtual void Start()
