@@ -1,6 +1,3 @@
-// Controla estados del juego: Menu, Jugando, Muerto.
-// La UI escucha OnEstadoCambiado para mostrar/ocultar pantallas.
-
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
@@ -22,11 +19,11 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         SetEstado(Estado.Menu);
-        //ScrollManager.Instance.Iniciar();
     }
 
     public void IniciarJuego()
     {
+        Time.timeScale = 1f;
         SetEstado(Estado.Jugando);
         ScrollManager.Instance.Iniciar();
     }
@@ -36,13 +33,23 @@ public class GameManager : MonoBehaviour
         if (EstadoActual == Estado.Muerto) return;
         SetEstado(Estado.Muerto);
         ScrollManager.Instance.Detener();
-        Invoke(nameof(Reiniciar), 3f); //se reinicia después de 3 segundos
+        Time.timeScale = 0f; // pausa el juego, el usuario decide
     }
 
-    void Reiniciar()
+    // Llamado por botón Reiniciar en pantalla GameOver
+    public void Reiniciar()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
+
+    // Llamado por botón Salir en pantalla GameOver
+    public void SalirAlMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(0);
+    }
+
     void SetEstado(Estado nuevo)
     {
         EstadoActual = nuevo;

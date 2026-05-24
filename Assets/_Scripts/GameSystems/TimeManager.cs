@@ -14,6 +14,9 @@ public class TimeManager : MonoBehaviour
     public float cargaMaxima = 100f;
     public float gastoPorSegundo = 15f;
 
+    private float tiempoActivado = 0f;
+    private const float MINIMO_ACTIVO = 0.5f;
+
     public bool PoderActivo { get; private set; }
     public float CargaNormalizada => cargaActual / cargaMaxima; // 0-1 para la UI
 
@@ -33,14 +36,32 @@ public class TimeManager : MonoBehaviour
     {
         if (!PoderActivo) return;
 
-        cargaActual -= gastoPorSegundo * Time.deltaTime;
+        tiempoActivado += Time.unscaledDeltaTime; // unscaled porque timeScale baja con el poder
 
+        cargaActual -= gastoPorSegundo * Time.unscaledDeltaTime;
         if (cargaActual <= 0f)
         {
             cargaActual = 0f;
             DesactivarPoder();
         }
     }
+    public void TogglePoder()
+    {
+        if (!PoderActivo)
+        {
+            if (cargaActual <= 0f) return;
+            PoderActivo = true;
+            tiempoActivado = 0f;
+            OnPoderActivado?.Invoke();
+            Debug.Log("Poder activado");
+        }
+        else
+        {
+            if (tiempoActivado < MINIMO_ACTIVO) return; // no deja desactivar antes de 3s
+            DesactivarPoder();
+        }
+    }
+
 
     // Conectar al botón de la UI
     public void ActivarPoder()
@@ -56,7 +77,7 @@ public class TimeManager : MonoBehaviour
         if (!PoderActivo) return;
         PoderActivo = false;
         OnPoderDesactivado?.Invoke();
-        Debug.Log("poder desactivado");
+        Debug.Log("Poder desactivado");
     }
 
     // Llamado por Reloj.cs

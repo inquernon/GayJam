@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5166177421627092985}
   - component: {fileID: 5760327049726962628}
   - component: {fileID: 7882033381098481643}
+  - component: {fileID: 3394806581214395105}
   m_Layer: 0
   m_Name: Arbol
   m_TagString: Untagged
@@ -70,9 +71,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Arbol
   carrilesPresente: 3
   carrilesPasado: 1
-  meshPresente: {fileID: 4973501486783171562}
-  meshPasado: {fileID: 5580654952454758012}
+  meshPresente: {fileID: 5580654952454758012}
+  meshPasado: {fileID: 4973501486783171562}
   coliderPresente: {fileID: 5760327049726962628}
+--- !u!114 &3394806581214395105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5758349258867031610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93c451a028ae5f94b827add51fa1d199, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GroundScroller
+  zReset: -20
+  zInicio: 40
+  L: 20
+  N: 5
 --- !u!1001 &4734147207393583917
 PrefabInstance:
   m_ObjectHideFlags: 0

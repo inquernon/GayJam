@@ -15,8 +15,8 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI textoPuntaje;
 
     [Header("Animación poder")]
-    public VideoPlayer videoReloj;
-    public RawImage pantallaVideo;
+    //public VideoPlayer videoReloj;
+    //public RawImage pantallaVideo;
 
     [Header("Slowdown")]
     public float timeScaleActivado = 0.3f;
@@ -30,9 +30,9 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        pantallaVideo.gameObject.SetActive(false);
+        //pantallaVideo.gameObject.SetActive(false);
         panelPausa.SetActive(false);
-        videoReloj.Stop();
+        //videoReloj.Stop();
 
         TimeManager.Instance.OnPoderActivado += OnPoderActivado;
         TimeManager.Instance.OnPoderDesactivado += OnPoderDesactivado;
@@ -45,8 +45,8 @@ public class UIManager : MonoBehaviour
         relojDeArena.fillAmount = TimeManager.Instance.CargaNormalizada;
         textoPuntaje.text = Mathf.FloorToInt(ScrollManager.Instance.GetDistancia()) + "m";
 
-        if (pantallaVideo.gameObject.activeSelf && !videoReloj.isPlaying)
-            pantallaVideo.gameObject.SetActive(false);
+        //if (pantallaVideo.gameObject.activeSelf && !videoReloj.isPlaying)
+           // pantallaVideo.gameObject.SetActive(false);
     }
 
     // ── Pausa ─────────────────────────────────────────
@@ -87,16 +87,16 @@ public class UIManager : MonoBehaviour
     {
         poderActivo = true;
         Time.timeScale = timeScaleActivado;
-        pantallaVideo.gameObject.SetActive(true);
-        videoReloj.Play();
+        //pantallaVideo.gameObject.SetActive(true);
+        //videoReloj.Play();
     }
 
     void OnPoderDesactivado()
     {
         poderActivo = false;
         Time.timeScale = timeScaleNormal;
-        pantallaVideo.gameObject.SetActive(false);
-        videoReloj.Stop();
+        //pantallaVideo.gameObject.SetActive(false);
+        //videoReloj.Stop();
     }
 
     void OnDestroy()

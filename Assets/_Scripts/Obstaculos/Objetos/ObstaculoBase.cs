@@ -23,9 +23,12 @@ public abstract class ObstaculoBase : MonoBehaviour
 
     protected virtual void Start()
     {
+        if (TimeManager.Instance == null) { Debug.LogError("TimeManager no existe"); return; }
+
         TimeManager.Instance.OnPoderActivado += EstadoPasado;
         TimeManager.Instance.OnPoderDesactivado += EstadoPresente;
 
+        // Nace en el estado correcto según si el poder está activo
         if (TimeManager.Instance.PoderActivo) EstadoPasado();
         else EstadoPresente();
     }
