@@ -1,70 +1,74 @@
-﻿// Maneja toda la UI: menu, HUD, game over.
-// SETUP Canvas:
-//   Canvas
-//   └── UIManager.cs
-//       ├── PantallaMenu     (Panel)
-//       │   └── BotonJugar   (Button)
-//       ├── PantallaHUD      (Panel)
-//       │   ├── BarraPoder   (Image, ImageType=Filled, FillMethod=Horizontal)
-//       │   └── TextoPuntaje (TextMeshProUGUI)
-//       └── PantallaGameOver (Panel)
-//           └── TextoGameOver (TextMeshProUGUI)
+﻿// Responsabilidad única: HUD durante el juego.
+// Menu y GameOver son escenas separadas — este script no las maneja.
+// Requiere un VideoPlayer en el GameObject para la animación del poder.
 
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Video;
 using TMPro;
 
 public class UIManager : MonoBehaviour
 {
-    [Header("Pantallas")]
-    public GameObject pantallaMenu;
-    public GameObject pantallaHUD;
-    public GameObject pantallaGameOver;
-
     [Header("HUD")]
-    public Image barraPoder;           // ImageType = Filled
+    public Image relojDeArena;    // imagen que se recorta (FillMethod=Vertical, de arriba a abajo)
     public TextMeshProUGUI textoPuntaje;
 
-    [Header("Game Over")]
-    public TextMeshProUGUI textoGameOver;
+    [Header("Animación poder")]
+    public VideoPlayer videoReloj;      // VideoPlayer con el mp4 del reloj
+    public RawImage pantallaVideo;   // RawImage que muestra el video (fullscreen)
+
+    [Header("Slowdown")]
+    public float timeScaleActivado = 0.3f;
+    public float timeScaleNormal = 1f;
+
+    private bool poderActivo = false;
 
     void Start()
     {
-        GameManager.Instance.OnEstadoCambiado += ActualizarPantallas;
-        ActualizarPantallas(GameManager.Instance.EstadoActual);
+        // El video no se reproduce al inicio
+        pantallaVideo.gameObject.SetActive(false);
+        videoReloj.Stop();
+
+        // Suscribirse a eventos del TimeManager
+        TimeManager.Instance.OnPoderActivado += OnPoderActivado;
+        TimeManager.Instance.OnPoderDesactivado += OnPoderDesactivado;
     }
 
     void Update()
     {
-        if (GameManager.Instance.EstadoActual != GameManager.Estado.Jugando) return;
+        // Actualiza reloj de arena — se vacía de arriba a abajo
+        relojDeArena.fillAmount = TimeManager.Instance.CargaNormalizada;
 
-        // Barra de poder
-        barraPoder.fillAmount = TimeManager.Instance.CargaNormalizada;
+        // Puntaje
+        textoPuntaje.text = Mathf.FloorToInt(ScrollManager.Instance.GetDistancia()) + "m";
 
-        // Puntaje = distancia recorrida
-        float distancia = ScrollManager.Instance.GetDistancia();
-        textoPuntaje.text = Mathf.FloorToInt(distancia) + "m";
+        // Cuando el video termina, lo oculta
+        if (pantallaVideo.gameObject.activeSelf && !videoReloj.isPlaying)
+            pantallaVideo.gameObject.SetActive(false);
     }
 
-    void ActualizarPantallas(GameManager.Estado estado)
+    void OnPoderActivado()
     {
-        pantallaMenu.SetActive(estado == GameManager.Estado.Menu);
-        pantallaHUD.SetActive(estado == GameManager.Estado.Jugando);
-        pantallaGameOver.SetActive(estado == GameManager.Estado.Muerto);
+        poderActivo = true;
+        Time.timeScale = timeScaleActivado;
 
-        if (estado == GameManager.Estado.Muerto)
-            textoGameOver.text = "GAME OVER\n" + Mathf.FloorToInt(ScrollManager.Instance.GetDistancia()) + "m";
+        // Reproduce el video encima de todo
+        pantallaVideo.gameObject.SetActive(true);
+        videoReloj.Play();
     }
 
-    // Conectar al Button BotonJugar en el inspector (OnClick)
-    public void OnBotonJugar()
+    void OnPoderDesactivado()
     {
-        GameManager.Instance.IniciarJuego();
+        poderActivo = false;
+        Time.timeScale = timeScaleNormal;
+        pantallaVideo.gameObject.SetActive(false);
+        videoReloj.Stop();
     }
 
     void OnDestroy()
     {
-        if (GameManager.Instance != null)
-            GameManager.Instance.OnEstadoCambiado -= ActualizarPantallas;
+        if (TimeManager.Instance == null) return;
+        TimeManager.Instance.OnPoderActivado -= OnPoderActivado;
+        TimeManager.Instance.OnPoderDesactivado -= OnPoderDesactivado;
     }
 }

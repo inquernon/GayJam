@@ -518,12 +518,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14e7e56161ee5024085786609de53ab3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
-  pantallaMenu: {fileID: 0}
-  pantallaHUD: {fileID: 2112178519}
-  pantallaGameOver: {fileID: 0}
-  barraPoder: {fileID: 775480560}
+  relojDeArena: {fileID: 0}
   textoPuntaje: {fileID: 715249376}
-  textoGameOver: {fileID: 0}
+  videoReloj: {fileID: 0}
+  pantallaVideo: {fileID: 0}
+  timeScaleActivado: 0.3
+  timeScaleNormal: 1
 --- !u!114 &447727588
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1078,6 +1078,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1114308365}
   - component: {fileID: 1114308364}
+  - component: {fileID: 1114308366}
   m_Layer: 0
   m_Name: Spawner
   m_TagString: Untagged
@@ -1098,7 +1099,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObstacleSpawner
   obstaculosPrefabs:
-  - {fileID: 8187296672200194138, guid: c351d942e62afc747890d836aec998a8, type: 3}
   - {fileID: 4340574091851820814, guid: 7ca571320e0f71744946301d0eac737b, type: 3}
   intervaloSpawn: 2.5
   distanciaSpawn: 30
@@ -1119,6 +1119,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1114308366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114308363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5368d4b0b45952439e12cc7f98b8b20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DifficultyManager
+  velocidadMax: 20
+  incrementoVelocidad: 0.5
+  intervaloMin: 0.8
+  reduccionIntervalo: 0.1
 --- !u!1 &1128553986
 GameObject:
   m_ObjectHideFlags: 0

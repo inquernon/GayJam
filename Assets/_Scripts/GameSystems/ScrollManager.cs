@@ -25,7 +25,8 @@ public class ScrollManager : MonoBehaviour
     void Update()
     {
         if (!corriendo) return;
-        distanciaRecorrida += velocidadActual * Time.deltaTime;
+        // unscaledDeltaTime ignora timeScale — la distancia sigue contando normal
+        distanciaRecorrida += velocidadActual * Time.unscaledDeltaTime;
     }
 
     // Todo objeto del mundo llama esto para moverse
