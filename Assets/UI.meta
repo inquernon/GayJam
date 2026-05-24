@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: cd247a12c61de38489892cc2df9cdb37
+=======
+guid: 1679cfc53e071a74baf571a89f5c5227
+>>>>>>> origin/Alex-Implementacion
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

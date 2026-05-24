@@ -40,7 +40,8 @@ public class ObstacleSpawner : MonoBehaviour
 
     void Update()
     {
-        timer += Time.deltaTime;
+        // unscaledDeltaTime para que el poder no afecte el spawn
+        timer += Time.unscaledDeltaTime;
         if (timer >= intervaloSpawn)
         {
             timer = 0f;
@@ -52,13 +53,30 @@ public class ObstacleSpawner : MonoBehaviour
     {
         if (obstaculosPrefabs.Length == 0) return;
 
-        GameObject prefab = obstaculosPrefabs[Random.Range(0, obstaculosPrefabs.Length)];
-        ObstaculoBase datos = prefab.GetComponent<ObstaculoBase>();
+        GameObject prefab;
+        ObstaculoBase datos;
+
+        // Intentar hasta 3 veces para respetar la condicion del reloj
+        int intentos = 0;
+        do
+        {
+            prefab = obstaculosPrefabs[Random.Range(0, obstaculosPrefabs.Length)];
+            datos = prefab.GetComponent<ObstaculoBase>();
+            intentos++;
+
+            // Si es reloj y el poder está activo, busca otro prefab
+            bool esReloj = prefab.GetComponent<Reloj>() != null;
+            bool poderActivo = TimeManager.Instance.PoderActivo;
+
+            if (esReloj && poderActivo && intentos < 3) continue;
+            break;
+        }
+        while (true);
 
         float x;
         if (datos == null)
         {
-            // Es un pickup (Reloj), spawn en carril aleatorio simple
+            // Es pickup (Reloj)
             int carril = Random.Range(-1, 2);
             x = carril * separacionCarriles;
         }
@@ -72,7 +90,7 @@ public class ObstacleSpawner : MonoBehaviour
         Instantiate(prefab, posicion, Quaternion.identity);
     }
 
-    int GetCarrilOrigen(int carrilesQueOcupa)
+   /* int GetCarrilOrigen(int carrilesQueOcupa)
     {
         switch (carrilesQueOcupa)
         {
@@ -87,6 +105,16 @@ public class ObstacleSpawner : MonoBehaviour
                 return 0;
             default:
                 return 0;
+        }
+    }*/
+    int GetCarrilOrigen(int carrilesQueOcupa)
+    {
+        switch (carrilesQueOcupa)
+        {
+            case 1: return Random.Range(-1, 2); // -1, 0 o 1
+            case 2: return Random.Range(0, 2) == 0 ? -1 : 0; // solo -1 o 0
+            case 3: return 0;
+            default: return 0;
         }
     }
 

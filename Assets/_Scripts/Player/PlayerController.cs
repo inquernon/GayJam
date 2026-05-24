@@ -27,6 +27,8 @@ public class PlayerController : MonoBehaviour
     private Vector2 touchInicio;
     private bool swipeRegistrado = false;
 
+    private Vector3 _movimientoFrame;
+
     void Awake()
     {
         cc = GetComponent<CharacterController>();
@@ -36,9 +38,11 @@ public class PlayerController : MonoBehaviour
     {
         if (!ScrollManager.Instance) return;
 
+        _movimientoFrame = Vector3.zero;
         ProcesarInput();
         AplicarMovimientoLateral();
         AplicarGravedad();
+        cc.Move(_movimientoFrame);
     }
 
     // ── Input ─────────────────────────────────────────
@@ -52,8 +56,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W)) Saltar();
         if (Input.GetKeyDown(KeyCode.S)) IniciarSlide();
         if (Input.GetKeyDown(KeyCode.Space)) Saltar();
-        if (Input.GetKeyDown(KeyCode.T)) TimeManager.Instance.ActivarPoder();
-        if (Input.GetKeyUp(KeyCode.T)) TimeManager.Instance.DesactivarPoder();
+        if (Input.GetKeyDown(KeyCode.T)) TimeManager.Instance.TogglePoder();
 #endif
         ProcesarSwipe();
     }
@@ -105,20 +108,23 @@ public class PlayerController : MonoBehaviour
     {
         float xActual = transform.position.x;
         float xNuevo = Mathf.MoveTowards(xActual, xObjetivo, velocidadLateral * Time.deltaTime);
-        float diferencia = xNuevo - xActual;
-        cc.Move(new Vector3(diferencia, 0f, 0f));
+        _movimientoFrame.x = xNuevo - xActual;
     }
 
     void AplicarGravedad()
     {
-        if (cc.isGrounded && velocidadY < 0f)
+        if (cc.isGrounded)
         {
-            velocidadY = -2f;
             enSuelo = true;
+            if (velocidadY < 0f) velocidadY = -2f;
+        }
+        else
+        {
+            enSuelo = false;
         }
 
         velocidadY += gravedad * Time.deltaTime;
-        cc.Move(Vector3.up * velocidadY * Time.deltaTime);
+        _movimientoFrame.y = velocidadY * Time.deltaTime;
     }
 
     void Saltar()
