@@ -49,15 +49,12 @@ public class PlayerController : MonoBehaviour
 
     void ProcesarInput()
     {
-#if UNITY_EDITOR
-        // Teclado para testing rápido
         if (Input.GetKeyDown(KeyCode.A)) CambiarCarril(-1);
         if (Input.GetKeyDown(KeyCode.D)) CambiarCarril(1);
         if (Input.GetKeyDown(KeyCode.W)) Saltar();
         if (Input.GetKeyDown(KeyCode.S)) IniciarSlide();
         if (Input.GetKeyDown(KeyCode.Space)) Saltar();
         if (Input.GetKeyDown(KeyCode.T)) TimeManager.Instance.TogglePoder();
-#endif
         ProcesarSwipe();
     }
 

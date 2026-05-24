@@ -1,10 +1,8 @@
-﻿// Responsabilidad única: HUD durante el juego.
+// Responsabilidad única: HUD durante el juego.
 // Menu y GameOver son escenas separadas — este script no las maneja.
-// Requiere un VideoPlayer en el GameObject para la animación del poder.
 
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Video;
 using UnityEngine.SceneManagement;
 using TMPro;
 
@@ -14,28 +12,31 @@ public class UIManager : MonoBehaviour
     public Image relojDeArena;
     public TextMeshProUGUI textoPuntaje;
 
-    [Header("Animación poder")]
-    //public VideoPlayer videoReloj;
-    //public RawImage pantallaVideo;
-
     [Header("Slowdown")]
     public float timeScaleActivado = 0.3f;
     public float timeScaleNormal = 1f;
 
     [Header("Pausa")]
-    public GameObject panelPausa; // Panel con los 3 botones
+    public GameObject panelPausa;
+
+    [Header("Game Over")]
+    public GameObject panelGameOver;
 
     private bool poderActivo = false;
     private bool pausado = false;
 
     void Start()
     {
-        //pantallaVideo.gameObject.SetActive(false);
         panelPausa.SetActive(false);
-        //videoReloj.Stop();
 
         TimeManager.Instance.OnPoderActivado += OnPoderActivado;
         TimeManager.Instance.OnPoderDesactivado += OnPoderDesactivado;
+
+        GameManager.Instance.OnEstadoCambiado += estado =>
+        {
+            if (estado == GameManager.Estado.Muerto)
+                GameOver();
+        };
     }
 
     void Update()
@@ -44,14 +45,24 @@ public class UIManager : MonoBehaviour
 
         relojDeArena.fillAmount = TimeManager.Instance.CargaNormalizada;
         textoPuntaje.text = Mathf.FloorToInt(ScrollManager.Instance.GetDistancia()) + "m";
-
-        //if (pantallaVideo.gameObject.activeSelf && !videoReloj.isPlaying)
-           // pantallaVideo.gameObject.SetActive(false);
     }
 
     // ── Pausa ─────────────────────────────────────────
 
-    // Conectar al botón de pausa (el || de la pantalla)
+    public void Pausar()
+    {
+        pausado = true;
+        Time.timeScale = 0f;
+        panelPausa.SetActive(true);
+    }
+
+    public void Continuar()
+    {
+        pausado = false;
+        Time.timeScale = poderActivo ? timeScaleActivado : timeScaleNormal;
+        panelPausa.SetActive(false);
+    }
+
     public void OnBotonPausa()
     {
         pausado = true;
@@ -59,7 +70,35 @@ public class UIManager : MonoBehaviour
         panelPausa.SetActive(true);
     }
 
-    // Conectar al botón Continuar dentro del panelPausa
+    public void Restart()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(1);
+    }
+
+    public void Exit()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(0);
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
+    }
+
+    public void Play()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(1);
+    }
+
+    public void GameOver()
+    {
+        Time.timeScale = 0f;
+        panelGameOver.SetActive(true);
+    }
+
     public void OnBotonContinuar()
     {
         pausado = false;
@@ -67,18 +106,16 @@ public class UIManager : MonoBehaviour
         panelPausa.SetActive(false);
     }
 
-    // Conectar al botón Reiniciar dentro del panelPausa
     public void OnBotonReiniciar()
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    // Conectar al botón Salir dentro del panelPausa
     public void OnBotonSalir()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(0); // escena 0 = Menu
+        SceneManager.LoadScene(0);
     }
 
     // ── Poder ─────────────────────────────────────────
@@ -87,16 +124,12 @@ public class UIManager : MonoBehaviour
     {
         poderActivo = true;
         Time.timeScale = timeScaleActivado;
-        //pantallaVideo.gameObject.SetActive(true);
-        //videoReloj.Play();
     }
 
     void OnPoderDesactivado()
     {
         poderActivo = false;
         Time.timeScale = timeScaleNormal;
-        //pantallaVideo.gameObject.SetActive(false);
-        //videoReloj.Stop();
     }
 
     void OnDestroy()
