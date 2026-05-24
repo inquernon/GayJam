@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour
     public float alturaColisionSlide = 1f;
     private CharacterController cc;
 
+    private PlayerAnimatorController animController; // ← AGREGAR
+
     // Input swipe móvil
     private Vector2 touchInicio;
     private bool swipeRegistrado = false;
@@ -32,10 +34,20 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         cc = GetComponent<CharacterController>();
+
+        // ← CAMBIA por esto
+        Transform hijo = transform.Find("AdultCharAnimations");
+        if (hijo != null)
+            animController = GetComponentInChildren<PlayerAnimatorController>(true);
+
+        Debug.Log("animController: " + animController); // debug temporal
     }
 
     void Update()
     {
+       
+        ActualizarAnimaciones();
+
         if (!ScrollManager.Instance) return;
 
         _movimientoFrame = Vector3.zero;
@@ -43,6 +55,23 @@ public class PlayerController : MonoBehaviour
         AplicarMovimientoLateral();
         AplicarGravedad();
         cc.Move(_movimientoFrame);
+
+        ActualizarAnimaciones();
+
+    }
+
+    void ActualizarAnimaciones()
+    {
+        if (animController == null)
+            
+            
+            return;
+
+        Debug.Log($"enSuelo:{enSuelo} velY:{velocidadY}");
+
+        animController.SetGrounded(enSuelo);
+        animController.SetJumping(!enSuelo && velocidadY > 0);
+   
     }
 
     // ── Input ─────────────────────────────────────────
@@ -102,6 +131,13 @@ public class PlayerController : MonoBehaviour
 
         carrilActual = nuevoCarril;
         xObjetivo = carrilActual * 2.5f;
+
+        if (animController != null)
+        {
+            animController.SetChangingLeft(direccion < 0);
+            animController.SetChangingRight(direccion > 0);
+            StartCoroutine(ResetCambioCarril());
+        }
     }
 
     void AplicarMovimientoLateral()
@@ -156,4 +192,13 @@ public class PlayerController : MonoBehaviour
     public bool EstaEnSuelo() => enSuelo;
     public bool EstaSliding() => slidingActivo;
     public int GetCarril() => carrilActual;
+
+    IEnumerator ResetCambioCarril()
+    {
+        yield return new WaitForSeconds(0.3f); // duración aprox de la animación
+        animController.SetChangingLeft(false);
+        animController.SetChangingRight(false);
+    }
+
+
 }
