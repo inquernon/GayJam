@@ -5,54 +5,88 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class UIManager : MonoBehaviour
 {
     [Header("HUD")]
-    public Image relojDeArena;    // imagen que se recorta (FillMethod=Vertical, de arriba a abajo)
+    public Image relojDeArena;
     public TextMeshProUGUI textoPuntaje;
 
     [Header("Animación poder")]
-    public VideoPlayer videoReloj;      // VideoPlayer con el mp4 del reloj
-    public RawImage pantallaVideo;   // RawImage que muestra el video (fullscreen)
+    public VideoPlayer videoReloj;
+    public RawImage pantallaVideo;
 
     [Header("Slowdown")]
     public float timeScaleActivado = 0.3f;
     public float timeScaleNormal = 1f;
 
+    [Header("Pausa")]
+    public GameObject panelPausa; // Panel con los 3 botones
+
     private bool poderActivo = false;
+    private bool pausado = false;
 
     void Start()
     {
-        // El video no se reproduce al inicio
         pantallaVideo.gameObject.SetActive(false);
+        panelPausa.SetActive(false);
         videoReloj.Stop();
 
-        // Suscribirse a eventos del TimeManager
         TimeManager.Instance.OnPoderActivado += OnPoderActivado;
         TimeManager.Instance.OnPoderDesactivado += OnPoderDesactivado;
     }
 
     void Update()
     {
-        // Actualiza reloj de arena — se vacía de arriba a abajo
-        relojDeArena.fillAmount = TimeManager.Instance.CargaNormalizada;
+        if (pausado) return;
 
-        // Puntaje
+        relojDeArena.fillAmount = TimeManager.Instance.CargaNormalizada;
         textoPuntaje.text = Mathf.FloorToInt(ScrollManager.Instance.GetDistancia()) + "m";
 
-        // Cuando el video termina, lo oculta
         if (pantallaVideo.gameObject.activeSelf && !videoReloj.isPlaying)
             pantallaVideo.gameObject.SetActive(false);
     }
+
+    // ── Pausa ─────────────────────────────────────────
+
+    // Conectar al botón de pausa (el || de la pantalla)
+    public void OnBotonPausa()
+    {
+        pausado = true;
+        Time.timeScale = 0f;
+        panelPausa.SetActive(true);
+    }
+
+    // Conectar al botón Continuar dentro del panelPausa
+    public void OnBotonContinuar()
+    {
+        pausado = false;
+        Time.timeScale = poderActivo ? timeScaleActivado : timeScaleNormal;
+        panelPausa.SetActive(false);
+    }
+
+    // Conectar al botón Reiniciar dentro del panelPausa
+    public void OnBotonReiniciar()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    // Conectar al botón Salir dentro del panelPausa
+    public void OnBotonSalir()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(0); // escena 0 = Menu
+    }
+
+    // ── Poder ─────────────────────────────────────────
 
     void OnPoderActivado()
     {
         poderActivo = true;
         Time.timeScale = timeScaleActivado;
-
-        // Reproduce el video encima de todo
         pantallaVideo.gameObject.SetActive(true);
         videoReloj.Play();
     }

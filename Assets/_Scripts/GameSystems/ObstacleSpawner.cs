@@ -52,13 +52,30 @@ public class ObstacleSpawner : MonoBehaviour
     {
         if (obstaculosPrefabs.Length == 0) return;
 
-        GameObject prefab = obstaculosPrefabs[Random.Range(0, obstaculosPrefabs.Length)];
-        ObstaculoBase datos = prefab.GetComponent<ObstaculoBase>();
+        GameObject prefab;
+        ObstaculoBase datos;
+
+        // Intentar hasta 3 veces para respetar la condicion del reloj
+        int intentos = 0;
+        do
+        {
+            prefab = obstaculosPrefabs[Random.Range(0, obstaculosPrefabs.Length)];
+            datos = prefab.GetComponent<ObstaculoBase>();
+            intentos++;
+
+            // Si es reloj y el poder está activo, busca otro prefab
+            bool esReloj = prefab.GetComponent<Reloj>() != null;
+            bool poderActivo = TimeManager.Instance.PoderActivo;
+
+            if (esReloj && poderActivo && intentos < 3) continue;
+            break;
+        }
+        while (true);
 
         float x;
         if (datos == null)
         {
-            // Es un pickup (Reloj), spawn en carril aleatorio simple
+            // Es pickup (Reloj)
             int carril = Random.Range(-1, 2);
             x = carril * separacionCarriles;
         }
@@ -68,7 +85,7 @@ public class ObstacleSpawner : MonoBehaviour
             x = GetPosicionX(carrilOrigen, datos.carrilesPresente);
         }
 
-        Vector3 posicion = new Vector3(x, 0f, jugador.position.z + distanciaSpawn);
+        Vector3 posicion = new Vector3(x, jugador.position.z + distanciaSpawn, 0f);
         Instantiate(prefab, posicion, Quaternion.identity);
     }
 
